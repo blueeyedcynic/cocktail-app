@@ -52,13 +52,73 @@ export default function ResultsDisplay({ results }) {
     if (!recipeName) return;
     
     // Create the message text
-    const messageText = `${recipeName}\n\n${recipeContent.join('\n')}\n\nShared from Cocktail Discovery App`;
+    let messageText = recipeName;
     
-    // Encode the message for URL
+    if (recipeContent.length > 0) {
+      messageText += '\n\n' + recipeContent.join('\n');
+    }
+    
+    messageText += '\n\nShared from Cocktail Discovery App';
+    
+    // Check if we're on mobile and the Web Share API is available
+    if (navigator.share && /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent)) {
+      navigator.share({
+        title: recipeName,
+        text: messageText
+      }).catch(err => {
+        console.log('Web Share failed, falling back to SMS:', err);
+        // Fallback to SMS if Web Share fails
+        fallbackToSMS(messageText);
+      });
+    } else {
+      // Fallback to SMS
+      fallbackToSMS(messageText);
+    }
+  };
+
+  const fallbackToSMS = (messageText) => {
+    // Try to keep message under SMS limits (160 chars per SMS, but most phones handle longer)
+    // If message is very long, truncate it
+    if (messageText.length > 1000) {
+      const lines = messageText.split('\n');
+      let truncatedMessage = lines[0]; // Recipe name
+      let charCount = truncatedMessage.length;
+      
+      for (let i = 1; i < lines.length; i++) {
+        if (charCount + lines[i].length + 1 < 900) { // Leave room for footer
+          truncatedMessage += '\n' + lines[i];
+          charCount += lines[i].length + 1;
+        } else {
+          truncatedMessage += '\n... (truncated)';
+          break;
+        }
+      }
+      
+      truncatedMessage += '\n\nShared from Cocktail Discovery App';
+      messageText = truncatedMessage;
+    }
+    
+    // Encode the message for URL - be more careful with encoding
     const encodedMessage = encodeURIComponent(messageText);
     
-    // Create SMS link
-    const smsLink = `sms:?&body=${encodedMessage}`;
+    console.log('Final encoded message length:', encodedMessage.length);
+    
+    // Try different SMS URL formats based on device
+    const userAgent = navigator.userAgent;
+    let smsLink;
+    
+    if (/iPhone|iPad|iPod/i.test(userAgent)) {
+      // iOS format
+      smsLink = `sms:&body=${encodedMessage}`;
+    } else if (/Android/i.test(userAgent)) {
+      // Android format
+      smsLink = `sms:?body=${encodedMessage}`;
+    } else {
+      // Generic format
+      smsLink = `sms:?body=${encodedMessage}`;
+    }
+    
+    console.log('SMS link:', smsLink);
     
     // Open the SMS app
     window.location.href = smsLink;
