@@ -120,8 +120,8 @@ export default function Home() {
     <>
       <div className="container">
         <div className="header">
-          <h1>Cocktail Discovery</h1>
-          <p>Tell us what you have, we'll tell you what to make</p>
+          <h1>Virtual Cocktail Crafter</h1>
+          <p>Tell me what you have, I'll tell you what to make</p>
         </div>
         
         <IngredientSelector 

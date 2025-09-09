@@ -1,7 +1,7 @@
 import './globals.css'
 
 export const metadata = {
-  title: 'Cocktail Discovery App',
+  title: 'Virtual Cocktail Crafter',
   description: 'Discover cocktails based on what you have on hand',
 }
 

@@ -40,7 +40,7 @@ export default function IngredientSelector({ selectedIngredients, onIngredientCh
 
   return (
     <div className="section">
-      <h2>What ingredients do you have?</h2>
+      <h2>What ingredients do you want to use?</h2>
       
       {renderCategory('baseSpirits', 'Base Spirits')}
       {renderCategory('liqueurs', 'Liqueurs')}
@@ -53,7 +53,7 @@ export default function IngredientSelector({ selectedIngredients, onIngredientCh
         <textarea
           value={selectedIngredients.other || ''}
           onChange={handleOtherChange}
-          placeholder="List any other ingredients you have (e.g., cucumber, jalapeño, maple syrup...)"
+          placeholder="List any other ingredients you have (e.g., cucumber, jalapeño, etc...)"
           className="text-input"
           rows={3}
         />
